@@ -8,8 +8,22 @@ import {
 
 import "./index.scss";
 import Login from "./pages/Login";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import store from "./store";
+import { Provider } from "react-redux";
 
-const IndexPage: Function = () => {
+const { palette } = createTheme();
+const theme = createTheme({
+    palette: {
+        primary: palette.augmentColor({
+            color: {
+                main: "#367a48",
+            },
+        }),
+    },
+});
+
+const IndexPage = () => {
     const navigate = useNavigate();
     useEffect(() => {
         navigate("/login");
@@ -29,5 +43,9 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-    <RouterProvider router={router} />
+    <ThemeProvider theme={theme}>
+        <Provider store={store}>
+            <RouterProvider router={router} />
+        </Provider>
+    </ThemeProvider>
 );

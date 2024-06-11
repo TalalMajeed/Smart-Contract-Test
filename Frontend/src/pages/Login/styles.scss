@@ -1,0 +1,38 @@
+#login {
+    background: rgb(241, 255, 243);
+    background: radial-gradient(
+        circle,
+        rgba(241, 255, 243, 1) 0%,
+        rgba(131, 194, 141, 1) 100%
+    );
+    width: 100svw;
+    height: 100svh;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+
+    section {
+        background-color: white;
+        padding: 2rem 3rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 25rem;
+        height: 30rem;
+
+        h1 {
+            color: var(--primary-dark);
+            font-size: 2rem;
+        }
+
+        p {
+            font-size: 1.2rem;
+            text-align: center;
+            line-height: 2.2rem;
+        }
+    }
+
+    .spacer {
+        flex-grow: 1;
+    }
+}
