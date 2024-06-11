@@ -3,10 +3,9 @@ import { createRef, useContext, useEffect } from "react";
 import { Context } from "../../main";
 import { useNavigate } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
-import { TextField } from "@mui/material";
+import { AlertColor, TextField } from "@mui/material";
 import { Alert } from "@mui/material";
 import { useState } from "react";
-import VotingSystem from "../../contracts/VotingSystem.json";
 
 const Panel = () => {
     const navigate = useNavigate();
@@ -54,31 +53,36 @@ const Panel = () => {
         marginBottom: "2rem",
     };
 
+    const customAlert: Object = {
+        margin: "1rem auto 0 auto",
+        fontSize: "1rem",
+    };
+
     const ADDINPUT = createRef<HTMLInputElement>();
     const REMOVEINPUT = createRef<HTMLInputElement>();
 
     const [addLoading, setAddLoading] = useState<boolean>(false);
     const [removeLoading, setRemoveLoading] = useState<boolean>(false);
 
-    const [addStatus, setAddStatus] = useState(["info", "Mining Transaction"]);
-    const [removeStatus, setRemoveStatus] = useState([
-        "info",
-        "Mining Transaction",
-    ]);
+    const [addStatus, setAddStatus] = useState(["", ""]);
+    const [removeStatus, setRemoveStatus] = useState(["", ""]);
 
     const addChain = async () => {
         const candidate = ADDINPUT.current?.value;
         ADDINPUT.current!.value = "";
         if (!candidate) return;
         setAddLoading(true);
+        setAddStatus(["info", "Mining Transaction"]);
 
         try {
             await contract.methods
                 .addCandidate(candidate)
                 .send({ from: account });
             await readData();
+            setAddStatus(["success", "Transaction Successful"]);
         } catch (error) {
             console.log(error);
+            setAddStatus(["error", "Transaction Failed"]);
         } finally {
             setAddLoading(false);
         }
@@ -92,14 +96,17 @@ const Panel = () => {
             return;
         }
         setRemoveLoading(true);
+        setRemoveStatus(["info", "Mining Transaction"]);
 
         try {
             await contract.methods
                 .removeCandidate(candidate)
                 .send({ from: account });
             await readData();
+            setRemoveStatus(["success", "Transaction Successful"]);
         } catch (error) {
             console.log(error);
+            setRemoveStatus(["error", "Transaction Failed"]);
         } finally {
             setRemoveLoading(false);
         }
@@ -125,6 +132,14 @@ const Panel = () => {
                     >
                         Add Candidate
                     </LoadingButton>
+                    {addStatus[0] != "" ? (
+                        <Alert
+                            style={customAlert}
+                            severity={addStatus[0] as AlertColor}
+                        >
+                            {addStatus[1]}
+                        </Alert>
+                    ) : null}
                 </section>
                 <section>
                     <h1>Remove Candidate</h1>
@@ -143,13 +158,23 @@ const Panel = () => {
                     >
                         Remove Candidate
                     </LoadingButton>
+                    {removeStatus[0] != "" ? (
+                        <Alert
+                            style={customAlert}
+                            severity={removeStatus[0] as AlertColor}
+                        >
+                            {removeStatus[1]}
+                        </Alert>
+                    ) : null}
                 </section>
             </div>
             <section>
                 <h1>Current Candidates</h1>
                 <div id="candidates">
                     {candidates.length > 0 ? null : (
-                        <Alert severity="info">No candidates found</Alert>
+                        <Alert style={customAlert} severity="info">
+                            No candidates found
+                        </Alert>
                     )}
                     {candidates.map((candidate: string, index: number) => (
                         <div key={index} className="candidate">
