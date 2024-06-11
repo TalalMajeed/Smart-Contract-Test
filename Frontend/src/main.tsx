@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import {
     createBrowserRouter,
@@ -11,6 +11,9 @@ import Login from "./pages/Login";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import store from "./store";
 import { Provider } from "react-redux";
+import { createContext } from "react";
+
+export const Context = createContext();
 
 const { palette } = createTheme();
 const theme = createTheme({
@@ -42,10 +45,20 @@ const router = createBrowserRouter([
     },
 ]);
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-    <ThemeProvider theme={theme}>
-        <Provider store={store}>
-            <RouterProvider router={router} />
-        </Provider>
-    </ThemeProvider>
-);
+const Parent = () => {
+    const [web3, setWeb3] = useState(null);
+    const [contract, setContract] = useState(null);
+    return (
+        <ThemeProvider theme={theme}>
+            <Provider store={store}>
+                <Context.Provider
+                    value={{ web3, setWeb3, contract, setContract }}
+                >
+                    <RouterProvider router={router} />
+                </Context.Provider>
+            </Provider>
+        </ThemeProvider>
+    );
+};
+
+ReactDOM.createRoot(document.getElementById("root")!).render(<Parent />);

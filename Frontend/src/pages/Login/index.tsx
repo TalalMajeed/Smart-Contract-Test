@@ -3,9 +3,13 @@ import { LoadingButton } from "@mui/lab";
 import { Alert } from "@mui/material";
 import Web3 from "web3";
 import { useState } from "react";
+import VotingSystem from "../../contracts/VotingSystem.json";
+import { Context } from "../../main";
+import { useContext } from "react";
 
 const Login = () => {
     const [loading, setLoading] = useState<boolean>(false);
+    const { web3, setWeb3, contract, setContract } = useContext(Context);
 
     const loginButton: Object = {
         width: "100%",
@@ -36,7 +40,17 @@ const Login = () => {
                 try {
                     const web3 = new Web3(provider);
                     const accounts = await web3.eth.getAccounts();
+                    const networkId = await web3.eth.net.getId();
+                    const deployedNetwork = VotingSystem.networks[networkId];
+                    const contract = new web3.eth.Contract(
+                        VotingSystem.abi,
+                        deployedNetwork.address
+                    );
                     console.log(accounts);
+                    console.log(deployedNetwork.address);
+                    console.log(contract);
+                    setWeb3(web3);
+                    setContract(contract);
                 } catch (error) {
                     setError("Connection to Blockchain Failed");
                     throw error;
