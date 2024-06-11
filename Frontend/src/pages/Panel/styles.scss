@@ -1,0 +1,38 @@
+#panel {
+    #holder {
+        display: flex;
+    }
+
+    width: 100svw;
+    height: 100svh;
+    background-color: #dbdbdb;
+    overflow: hidden;
+
+    h1 {
+        margin: 0 0 2rem 0;
+        color: var(--primary);
+    }
+
+    section {
+        background-color: white;
+        margin: 1.5rem;
+        padding: 2rem;
+        flex-grow: 1;
+
+        .candidate {
+            background-color: #e7e7e7;
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+
+            p {
+                margin: 0;
+                min-width: 30px;
+            }
+        }
+
+        .candidate:nth-child(odd) {
+            background-color: var(--primary-background);
+        }
+    }
+}

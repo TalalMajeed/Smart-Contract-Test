@@ -8,12 +8,21 @@ import {
 
 import "./index.scss";
 import Login from "./pages/Login";
+import Panel from "./pages/Panel";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import store from "./store";
-import { Provider } from "react-redux";
 import { createContext } from "react";
+import { Dispatch, SetStateAction } from "react";
 
-export const Context = createContext();
+type Web3ContextType = {
+    web3: any;
+    setWeb3: Dispatch<SetStateAction<any>>;
+    contract: any;
+    setContract: Dispatch<SetStateAction<any>>;
+    account: any;
+    setAccount: Dispatch<SetStateAction<any>>;
+};
+
+export const Context = createContext<Web3ContextType | null>(null);
 
 const { palette } = createTheme();
 const theme = createTheme({
@@ -43,20 +52,31 @@ const router = createBrowserRouter([
         path: "/login",
         element: <Login />,
     },
+    {
+        path: "/panel",
+        element: <Panel />,
+    },
 ]);
 
 const Parent = () => {
     const [web3, setWeb3] = useState(null);
     const [contract, setContract] = useState(null);
+    const [account, setAccount] = useState(null);
+
     return (
         <ThemeProvider theme={theme}>
-            <Provider store={store}>
-                <Context.Provider
-                    value={{ web3, setWeb3, contract, setContract }}
-                >
-                    <RouterProvider router={router} />
-                </Context.Provider>
-            </Provider>
+            <Context.Provider
+                value={{
+                    web3,
+                    setWeb3,
+                    contract,
+                    setContract,
+                    account,
+                    setAccount,
+                }}
+            >
+                <RouterProvider router={router} />
+            </Context.Provider>
         </ThemeProvider>
     );
 };

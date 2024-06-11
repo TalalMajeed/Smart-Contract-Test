@@ -6,10 +6,12 @@ import { useState } from "react";
 import VotingSystem from "../../contracts/VotingSystem.json";
 import { Context } from "../../main";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     const [loading, setLoading] = useState<boolean>(false);
-    const { web3, setWeb3, contract, setContract } = useContext(Context);
+    const { setWeb3, setContract, setAccount } = useContext(Context) as any;
+    const navigate = useNavigate();
 
     const loginButton: Object = {
         width: "100%",
@@ -46,11 +48,10 @@ const Login = () => {
                         VotingSystem.abi,
                         deployedNetwork.address
                     );
-                    console.log(accounts);
-                    console.log(deployedNetwork.address);
-                    console.log(contract);
                     setWeb3(web3);
                     setContract(contract);
+                    setAccount(accounts[0]);
+                    navigate("/panel");
                 } catch (error) {
                     setError("Connection to Blockchain Failed");
                     throw error;
