@@ -34,23 +34,20 @@ const Login = () => {
         setError("");
         try {
             const provider = new Web3.providers.HttpProvider(
-                "http://127.0.0.1:7545"
+                process.env.BLOCKCHAIN as string
             );
             if (!provider) throw new Error("Provider not found");
 
             const template = async () => {
                 try {
                     const web3 = new Web3(provider);
-                    const accounts = await web3.eth.getAccounts();
-                    const networkId = await web3.eth.net.getId();
-                    const deployedNetwork = VotingSystem.networks[networkId];
                     const contract = new web3.eth.Contract(
                         VotingSystem.abi,
-                        deployedNetwork.address
+                        process.env.CONTRACT as string
                     );
                     setWeb3(web3);
                     setContract(contract);
-                    setAccount(accounts[0]);
+                    setAccount(process.env.ACCOUNT as string);
                     navigate("/panel");
                 } catch (error) {
                     setError("Connection to Blockchain Failed");

@@ -12,6 +12,7 @@ contract VotingSystem {
 
     function addCandidate(string memory name) public {
         require(bytes(name).length > 0, "Candidate name cannot be empty");
+        require(!candidateExists(name), "Candidate already exists");
         candidates[top] = name;
         candidateIndices[name] = top;
         emit CandidateAdded(top, name);
@@ -31,14 +32,25 @@ contract VotingSystem {
 
     function candidateExists(string memory name) internal view returns (bool) {
         uint256 index = candidateIndices[name];
-        return (keccak256(bytes(candidates[index])) == keccak256(bytes(name)));
+        return (index < top && keccak256(bytes(candidates[index])) == keccak256(bytes(name)));
     }
 
     function getAllCandidates() public view returns (string[] memory) {
-        string[] memory names = new string[](top);
+        string[] memory tempNames = new string[](top);
+        uint256 count = 0;
+
         for (uint256 i = 0; i < top; i++) {
-            names[i] = candidates[i];
+            if (bytes(candidates[i]).length > 0) {
+                tempNames[count] = candidates[i];
+                count++;
+            }
         }
-        return names;
+
+        string[] memory validNames = new string[](count);
+        for (uint256 j = 0; j < count; j++) {
+            validNames[j] = tempNames[j];
+        }
+
+        return validNames;
     }
 }

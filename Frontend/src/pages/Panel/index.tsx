@@ -14,9 +14,13 @@ const Panel = () => {
     const [candidates, setCandidates] = useState([]) as any;
 
     const readData = async () => {
-        const data = await contract.methods.getAllCandidates().call();
-        setCandidates(data);
-        console.log(data);
+        try {
+            const data = await contract.methods.getAllCandidates().call();
+            setCandidates(data);
+            console.log(data);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     useEffect(() => {
@@ -41,13 +45,50 @@ const Panel = () => {
     const [addLoading, setAddLoading] = useState<boolean>(false);
     const [removeLoading, setRemoveLoading] = useState<boolean>(false);
 
+    const [addStatus, setAddStatus] = useState(["info", "Mining Transaction"]);
+    const [removeStatus, setRemoveStatus] = useState([
+        "info",
+        "Mining Transaction",
+    ]);
+
     const addChain = async () => {
-        setAddLoading(true);
+        console.log(ADDINPUT);
         const candidate = ADDINPUT.current?.value;
+        ADDINPUT.current!.value = "";
         if (!candidate) return;
-        await contract.methods.addCandidate(candidate).send({ from: account });
-        await readData();
-        setAddLoading(false);
+        setAddLoading(true);
+
+        try {
+            await contract.methods
+                .addCandidate(candidate)
+                .send({ from: account });
+            await readData();
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setAddLoading(false);
+        }
+    };
+
+    const removeChain = async () => {
+        const candidate = REMOVEINPUT.current?.value;
+        REMOVEINPUT.current!.value = "";
+        if (!candidate) {
+            setRemoveLoading(false);
+            return;
+        }
+        setRemoveLoading(true);
+
+        try {
+            await contract.methods
+                .removeCandidate(candidate)
+                .send({ from: account });
+            await readData();
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setRemoveLoading(false);
+        }
     };
 
     return !(web3 && contract && account) ? null : (
@@ -83,6 +124,8 @@ const Panel = () => {
                         color="primary"
                         variant="contained"
                         style={customButton}
+                        onClick={removeChain}
+                        loading={removeLoading}
                     >
                         Remove Candidate
                     </LoadingButton>
