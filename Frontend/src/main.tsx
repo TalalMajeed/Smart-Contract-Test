@@ -1,10 +1,33 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import React, { useEffect } from "react";
+import ReactDOM from "react-dom/client";
+import {
+    createBrowserRouter,
+    RouterProvider,
+    useNavigate,
+} from "react-router-dom";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+import "./index.scss";
+import Login from "./pages/Login";
+
+const IndexPage: Function = () => {
+    const navigate = useNavigate();
+    useEffect(() => {
+        navigate("/login");
+    }, []);
+    return <></>;
+};
+
+const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <IndexPage />,
+    },
+    {
+        path: "/login",
+        element: <Login />,
+    },
+]);
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+    <RouterProvider router={router} />
+);
