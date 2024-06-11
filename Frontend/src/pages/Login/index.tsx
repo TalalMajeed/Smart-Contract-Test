@@ -33,18 +33,22 @@ const Login = () => {
         setLoading(true);
         setError("");
         try {
-            const provider = new Web3.providers.HttpProvider(
+            const provider = new Web3.providers.WebsocketProvider(
                 process.env.BLOCKCHAIN as string
             );
+
             if (!provider) throw new Error("Provider not found");
 
             const template = async () => {
                 try {
                     const web3 = new Web3(provider);
+                    await web3.eth.net.isListening();
+
                     const contract = new web3.eth.Contract(
                         VotingSystem.abi,
                         process.env.CONTRACT as string
                     );
+
                     setWeb3(web3);
                     setContract(contract);
                     setAccount(process.env.ACCOUNT as string);

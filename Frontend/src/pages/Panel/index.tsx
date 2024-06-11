@@ -6,6 +6,7 @@ import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
 import { Alert } from "@mui/material";
 import { useState } from "react";
+import VotingSystem from "../../contracts/VotingSystem.json";
 
 const Panel = () => {
     const navigate = useNavigate();
@@ -17,15 +18,29 @@ const Panel = () => {
         try {
             const data = await contract.methods.getAllCandidates().call();
             setCandidates(data);
-            console.log(data);
         } catch (error) {
             console.log(error);
         }
     };
 
+    const registerEvents = async () => {
+        console.log("Registering");
+        try {
+            contract.events.allEvents().on("data", (event: any) => {
+                console.log("New Event:", event);
+                readData();
+            });
+        } catch (error) {
+            console.log("Event Registration Error:", error);
+        }
+    };
     useEffect(() => {
-        if (!web3 || !contract || !account) navigate("/login");
+        if (!web3 || !contract || !account) {
+            navigate("/login");
+            return;
+        }
         readData();
+        registerEvents();
     }, []);
 
     const customButton: Object = {
@@ -52,7 +67,6 @@ const Panel = () => {
     ]);
 
     const addChain = async () => {
-        console.log(ADDINPUT);
         const candidate = ADDINPUT.current?.value;
         ADDINPUT.current!.value = "";
         if (!candidate) return;
@@ -91,7 +105,7 @@ const Panel = () => {
         }
     };
 
-    return !(web3 && contract && account) ? null : (
+    return !(web3 || contract || account) ? null : (
         <main id="panel">
             <div id="holder">
                 <section>
